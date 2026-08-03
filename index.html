@@ -1975,6 +1975,9 @@
                 expenses = data || [];
             } catch (e) {
                 console.error("Error loading expenses", e);
+                if (e && e.message && e.message.includes('expenses')) {
+                    showMessage("Tabela 'expenses' não existe no banco. Rode o SQL de criação.", 'error');
+                }
             }
             renderExpenses();
             renderExpenseSummary();
@@ -2048,7 +2051,8 @@
             if (id) {
                 const { error } = await sb.from('expenses').update(data).eq('id', id);
                 if (error) {
-                    showMessage("Erro ao atualizar despesa.", 'error');
+                    console.error(error);
+                    showMessage("Erro ao atualizar despesa: " + error.message, 'error');
                     return;
                 }
             } else {
@@ -2056,7 +2060,8 @@
                 data.createdAt = new Date().toISOString();
                 const { error } = await sb.from('expenses').insert([data]);
                 if (error) {
-                    showMessage("Erro ao salvar despesa.", 'error');
+                    console.error(error);
+                    showMessage("Erro ao salvar despesa: " + error.message, 'error');
                     return;
                 }
             }
@@ -2069,7 +2074,8 @@
         const deleteExpense = async (id) => {
             const { error } = await sb.from('expenses').delete().eq('id', id);
             if (error) {
-                showMessage("Erro ao excluir despesa.", 'error');
+                console.error(error);
+                showMessage("Erro ao excluir despesa: " + error.message, 'error');
                 return;
             }
             await loadExpenses();
