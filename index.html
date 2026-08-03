@@ -457,12 +457,12 @@
         const SUPABASE_URL = 'https://xteoktgcfiaworavydpo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0ZW9rdGdjZmlhd29yYXZ5ZHBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3MzI2NDQsImV4cCI6MjEwMTMwODY0NH0.xdxQ-Ce_QS23UNZcuMZjt2TByNzegBxZ8WPkoj8odMk';
 
-        let supabase;
+        let sb;
         try {
             if (!window.supabase) {
                 throw new Error('Supabase JS não carregou (CDN bloqueado?)');
             }
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         } catch (e) {
             console.error(e);
         }
@@ -524,7 +524,7 @@
         const loadData = async () => {
             devices = [];
             try {
-                const { data, error } = await supabase
+                const { data, error } = await sb
                     .from('devices')
                     .select('*')
                     .order('createdAt', { ascending: true });
@@ -684,7 +684,7 @@
 
             if (id) {
                 // Edit existing
-                const { error } = await supabase
+                const { error } = await sb
                     .from('devices')
                     .update(deviceData)
                     .eq('id', id);
@@ -702,7 +702,7 @@
                 deviceData.profit = 0;
                 deviceData.createdAt = new Date().toISOString();
 
-                const { error } = await supabase
+                const { error } = await sb
                     .from('devices')
                     .insert([deviceData]);
                 if (error) {
@@ -776,7 +776,7 @@
             if (!device) return;
 
             const profit = sellPrice - device.totalCost;
-            const { error } = await supabase
+            const { error } = await sb
                 .from('devices')
                 .update({
                     status: STATUS.SOLD,
@@ -798,7 +798,7 @@
 
         // Delete Device
         const deleteDevice = async (id) => {
-            const { error } = await supabase
+            const { error } = await sb
                 .from('devices')
                 .delete()
                 .eq('id', id);
