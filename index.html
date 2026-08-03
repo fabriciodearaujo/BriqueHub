@@ -1149,6 +1149,7 @@
             renderInventory();
             renderSales();
             await loadExpenses();
+            updateDashboard();
         };
 
         // Navigation system
@@ -1572,6 +1573,10 @@
                 }
             });
 
+            // Deduz despesas da operação do lucro total
+            const totalExpenses = expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+            totalProfit -= totalExpenses;
+
             // Animate numbers simple update
             document.getElementById('stat-stock-count').textContent = inStock;
             document.getElementById('stat-invested-value').textContent = formatMoney(investedValue);
@@ -1979,6 +1984,7 @@
             }
             renderExpenses();
             renderExpenseSummary();
+            updateDashboard();
         };
 
         const renderExpenseSummary = () => {
