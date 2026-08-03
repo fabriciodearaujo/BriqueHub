@@ -334,6 +334,7 @@
                                 <th class="px-4 py-3 font-medium">Aparelho</th>
                                 <th class="px-4 py-3 font-medium">Data Venda</th>
                                 <th class="px-4 py-3 font-medium">Comprador</th>
+                                <th class="px-4 py-3 font-medium text-right">Custo</th>
                                 <th class="px-4 py-3 font-medium text-right">Valor Venda</th>
                                 <th class="px-4 py-3 font-medium text-right text-green-600">Lucro</th>
                                 <th class="px-4 py-3 font-medium text-center">Ações</th>
@@ -1708,6 +1709,7 @@
                     </td>
                     <td class="px-4 py-3 text-gray-600 text-sm">${formatDate(d.sellDate)}</td>
                     <td class="px-4 py-3 text-gray-600 text-sm">${d.buyerName || '-'}</td>
+                    <td class="px-4 py-3 text-right text-gray-600">${formatMoney(d.totalCost)}</td>
                     <td class="px-4 py-3 text-right font-medium text-gray-900">${formatMoney(d.sellPrice)}</td>
                     <td class="px-4 py-3 text-right font-bold ${d.profit > 0 ? 'text-green-600' : (d.profit < 0 ? 'text-red-500' : 'text-gray-500')}">
                         ${d.profit > 0 ? '+' : ''}${formatMoney(d.profit)}
@@ -1726,8 +1728,9 @@
                         <span class="text-xs text-gray-500">${formatDate(d.sellDate)}</span>
                     </div>
                     <div class="flex justify-between items-end mt-2">
-                        <div class="text-xs text-gray-500">
-                            Vend: <span class="font-medium text-gray-800">${formatMoney(d.sellPrice)}</span>
+                        <div class="text-xs text-gray-500 space-y-0.5">
+                            <div>Custo: <span class="font-medium text-gray-800">${formatMoney(d.totalCost)}</span></div>
+                            <div>Vend: <span class="font-medium text-gray-800">${formatMoney(d.sellPrice)}</span></div>
                         </div>
                         <div class="text-right">
                             <span class="text-[10px] text-gray-500 block mb-0.5">Lucro</span>
