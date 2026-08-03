@@ -1975,9 +1975,7 @@
                 expenses = data || [];
             } catch (e) {
                 console.error("Error loading expenses", e);
-                if (e && e.message && e.message.includes('expenses')) {
-                    showMessage("Tabela 'expenses' não existe no banco. Rode o SQL de criação.", 'error');
-                }
+                showMessage("Erro ao carregar despesas: " + (e && e.message ? e.message : e), 'error');
             }
             renderExpenses();
             renderExpenseSummary();
