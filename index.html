@@ -444,6 +444,11 @@
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // ===== TRATAMENTO DE ERROS (uso para diagnóstico) =====
+        window.addEventListener('error', (ev) => {
+            console.error('[App Error]', ev.message, ev.filename, ev.lineno);
+        });
+
         // State Management
         let devices = [];
 
@@ -451,7 +456,16 @@
         // Cole aqui a URL e a chave "anon" do seu projeto (Settings > API)
         const SUPABASE_URL = 'https://xteoktgcfiaworavydpo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0ZW9rdGdjZmlhd29yYXZ5ZHBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3MzI2NDQsImV4cCI6MjEwMTMwODY0NH0.xdxQ-Ce_QS23UNZcuMZjt2TByNzegBxZ8WPkoj8odMk';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let supabase;
+        try {
+            if (!window.supabase) {
+                throw new Error('Supabase JS não carregou (CDN bloqueado?)');
+            }
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            console.error(e);
+        }
 
         const STATUS = {
             STOCK: 'Em estoque',
