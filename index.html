@@ -86,6 +86,7 @@
         html.dark .bg-green-100 { background-color: rgba(52, 199, 89, 0.18) !important; }
         html.dark .bg-purple-100 { background-color: rgba(175, 82, 222, 0.18) !important; }
         html.dark .bg-orange-100 { background-color: rgba(255, 149, 0, 0.18) !important; }
+        html.dark .bg-cyan-100 { background-color: rgba(48, 176, 199, 0.18) !important; }
         html.dark .bg-red-50 { background-color: rgba(255, 59, 48, 0.12) !important; }
 
         html.dark .bg-blue-50\/50 { background-color: rgba(10, 132, 255, 0.12) !important; }
@@ -100,6 +101,7 @@
         html.dark .text-green-600,
         html.dark .text-green-700 { color: #81c784 !important; }
         html.dark .text-orange-600 { color: #ffb74d !important; }
+        html.dark .text-cyan-600 { color: #4dd0e1 !important; }
         html.dark .text-red-500,
         html.dark .text-red-600 { color: #ff6b61 !important; }
     </style>
@@ -163,7 +165,7 @@
             <h2 class="text-2xl font-bold mb-6 text-gray-800">Visão Geral</h2>
             
             <!-- Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                 <!-- Stat Card: Em Estoque -->
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
                     <div class="flex items-center justify-between mb-2">
@@ -185,8 +187,21 @@
                         </div>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500 font-medium">Investimento</p>
+                        <p class="text-sm text-gray-500 font-medium">Investimento (em estoque)</p>
                         <p class="text-2xl font-bold text-gray-800" id="stat-invested-value">R$ 0,00</p>
+                    </div>
+                </div>
+
+                <!-- Stat Card: Total Investido -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Total Investido (já gasto)</p>
+                        <p class="text-2xl font-bold text-gray-800" id="stat-total-invested">R$ 0,00</p>
                     </div>
                 </div>
 
@@ -1107,10 +1122,12 @@
         const updateDashboard = () => {
             let inStock = 0;
             let investedValue = 0;
+            let totalInvested = 0;
             let soldCount = 0;
             let totalProfit = 0;
 
             devices.forEach(d => {
+                totalInvested += d.totalCost;
                 if (d.status === STATUS.STOCK) {
                     inStock++;
                     investedValue += d.totalCost;
@@ -1123,6 +1140,7 @@
             // Animate numbers simple update
             document.getElementById('stat-stock-count').textContent = inStock;
             document.getElementById('stat-invested-value').textContent = formatMoney(investedValue);
+            document.getElementById('stat-total-invested').textContent = formatMoney(totalInvested);
             document.getElementById('stat-sold-count').textContent = soldCount;
             document.getElementById('stat-total-profit').textContent = formatMoney(totalProfit);
             
