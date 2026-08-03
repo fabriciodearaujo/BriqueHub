@@ -340,7 +340,13 @@
 
         <!-- REPORTS PAGE -->
         <div id="reports-page" class="page-transition hidden-page">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Relatórios de Vendas</h2>
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Relatórios</h2>
+
+            <!-- Tabs -->
+            <div class="flex gap-2 mb-6">
+                <button onclick="showReportTab('sales')" id="reportTabSales" class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white">Vendas</button>
+                <button onclick="showReportTab('purchases')" id="reportTabPurchases" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300">Compras</button>
+            </div>
 
             <!-- Filters -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
@@ -362,62 +368,126 @@
                 </div>
             </div>
 
-            <!-- Summary Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <p class="text-sm text-gray-500 font-medium">Vendas no Período</p>
-                    <p class="text-2xl font-bold text-gray-800" id="report-count">0</p>
+            <!-- SALES REPORT -->
+            <div id="report-tab-sales">
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm text-gray-500 font-medium">Vendas no Período</p>
+                        <p class="text-2xl font-bold text-gray-800" id="report-count">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm text-gray-500 font-medium">Receita</p>
+                        <p class="text-2xl font-bold text-gray-800" id="report-revenue">R$ 0,00</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm text-gray-500 font-medium">Lucro</p>
+                        <p class="text-2xl font-bold text-green-600" id="report-profit">R$ 0,00</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm text-gray-500 font-medium">Ticket Médio</p>
+                        <p class="text-2xl font-bold text-gray-800" id="report-avg">R$ 0,00</p>
+                    </div>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <p class="text-sm text-gray-500 font-medium">Receita</p>
-                    <p class="text-2xl font-bold text-gray-800" id="report-revenue">R$ 0,00</p>
+
+                <!-- Vendas por mês -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                    <div class="p-4 border-b border-gray-100">
+                        <h3 class="font-semibold text-gray-800">Vendas por Mês</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 text-gray-500">
+                                <tr>
+                                    <th class="px-4 py-3 font-medium">Período</th>
+                                    <th class="px-4 py-3 font-medium text-center">Vendas</th>
+                                    <th class="px-4 py-3 font-medium text-right">Receita</th>
+                                    <th class="px-4 py-3 font-medium text-right text-green-600">Lucro</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-by-month" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <p class="text-sm text-gray-500 font-medium">Lucro</p>
-                    <p class="text-2xl font-bold text-green-600" id="report-profit">R$ 0,00</p>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <p class="text-sm text-gray-500 font-medium">Ticket Médio</p>
-                    <p class="text-2xl font-bold text-gray-800" id="report-avg">R$ 0,00</p>
+
+                <!-- Modelos mais vendidos -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                    <div class="p-4 border-b border-gray-100">
+                        <h3 class="font-semibold text-gray-800">Modelos Mais Vendidos</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 text-gray-500">
+                                <tr>
+                                    <th class="px-4 py-3 font-medium">Modelo</th>
+                                    <th class="px-4 py-3 font-medium text-center">Qtd</th>
+                                    <th class="px-4 py-3 font-medium text-right">Receita</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-top-models" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Vendas por mês -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-                <div class="p-4 border-b border-gray-100">
-                    <h3 class="font-semibold text-gray-800">Vendas por Mês</h3>
+            <!-- PURCHASES REPORT -->
+            <div id="report-tab-purchases" class="hidden">
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm text-gray-500 font-medium">Compras no Período</p>
+                        <p class="text-2xl font-bold text-gray-800" id="report-p-count">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm text-gray-500 font-medium">Total Investido</p>
+                        <p class="text-2xl font-bold text-gray-800" id="report-p-invested">R$ 0,00</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm text-gray-500 font-medium">Custo Médio</p>
+                        <p class="text-2xl font-bold text-gray-800" id="report-p-avg">R$ 0,00</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm text-gray-500 font-medium">Valor em Estoque (período)</p>
+                        <p class="text-2xl font-bold text-gray-800" id="report-p-stock">R$ 0,00</p>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm whitespace-nowrap">
-                        <thead class="bg-gray-50 text-gray-500">
-                            <tr>
-                                <th class="px-4 py-3 font-medium">Período</th>
-                                <th class="px-4 py-3 font-medium text-center">Vendas</th>
-                                <th class="px-4 py-3 font-medium text-right">Receita</th>
-                                <th class="px-4 py-3 font-medium text-right text-green-600">Lucro</th>
-                            </tr>
-                        </thead>
-                        <tbody id="report-by-month" class="divide-y divide-gray-100"></tbody>
-                    </table>
-                </div>
-            </div>
 
-            <!-- Modelos mais vendidos -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-                <div class="p-4 border-b border-gray-100">
-                    <h3 class="font-semibold text-gray-800">Modelos Mais Vendidos</h3>
+                <!-- Compras por mês -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                    <div class="p-4 border-b border-gray-100">
+                        <h3 class="font-semibold text-gray-800">Compras por Mês</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 text-gray-500">
+                                <tr>
+                                    <th class="px-4 py-3 font-medium">Período</th>
+                                    <th class="px-4 py-3 font-medium text-center">Compras</th>
+                                    <th class="px-4 py-3 font-medium text-right">Investido</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-p-by-month" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm whitespace-nowrap">
-                        <thead class="bg-gray-50 text-gray-500">
-                            <tr>
-                                <th class="px-4 py-3 font-medium">Modelo</th>
-                                <th class="px-4 py-3 font-medium text-center">Qtd</th>
-                                <th class="px-4 py-3 font-medium text-right">Receita</th>
-                            </tr>
-                        </thead>
-                        <tbody id="report-top-models" class="divide-y divide-gray-100"></tbody>
-                    </table>
+
+                <!-- Modelos mais comprados -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                    <div class="p-4 border-b border-gray-100">
+                        <h3 class="font-semibold text-gray-800">Modelos Mais Comprados</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 text-gray-500">
+                                <tr>
+                                    <th class="px-4 py-3 font-medium">Modelo</th>
+                                    <th class="px-4 py-3 font-medium text-center">Qtd</th>
+                                    <th class="px-4 py-3 font-medium text-right">Investido</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-p-top-models" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1561,7 +1631,7 @@
             renderReports();
         };
 
-        const renderReports = () => {
+        const renderSalesReports = () => {
             const startVal = document.getElementById('report-start').value;
             const endVal = document.getElementById('report-end').value;
             const start = startVal ? new Date(startVal + 'T00:00:00') : null;
@@ -1638,6 +1708,113 @@
                         <td class="px-4 py-3 text-right text-gray-900">${formatMoney(v.revenue)}</td>
                     </tr>`).join('');
             }
+        };
+
+        // ===== RELATÓRIO DE COMPRAS =====
+        const renderPurchaseReports = () => {
+            const startVal = document.getElementById('report-start').value;
+            const endVal = document.getElementById('report-end').value;
+            const start = startVal ? new Date(startVal + 'T00:00:00') : null;
+            const end = endVal ? new Date(endVal + 'T23:59:59') : null;
+
+            const filtered = devices.filter(d => {
+                if (!d.purchaseDate) return false;
+                const date = new Date(d.purchaseDate + 'T00:00:00');
+                if (start && date < start) return false;
+                if (end && date > end) return false;
+                return true;
+            });
+
+            // Summary
+            const count = filtered.length;
+            const invested = filtered.reduce((s, d) => s + (d.totalCost || 0), 0);
+            const avg = count ? invested / count : 0;
+            const inStock = filtered
+                .filter(d => d.status === STATUS.STOCK)
+                .reduce((s, d) => s + (d.totalCost || 0), 0);
+
+            document.getElementById('report-p-count').textContent = count;
+            document.getElementById('report-p-invested').textContent = formatMoney(invested);
+            document.getElementById('report-p-avg').textContent = formatMoney(avg);
+            document.getElementById('report-p-stock').textContent = formatMoney(inStock);
+
+            // Compras por mês
+            const byMonth = {};
+            filtered.forEach(d => {
+                const key = d.purchaseDate.substring(0, 7);
+                if (!byMonth[key]) byMonth[key] = { count: 0, invested: 0 };
+                byMonth[key].count++;
+                byMonth[key].invested += d.totalCost || 0;
+            });
+
+            const monthRows = Object.entries(byMonth).sort((a, b) => b[0].localeCompare(a[0]));
+            const monthBody = document.getElementById('report-p-by-month');
+            if (monthRows.length === 0) {
+                monthBody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">Nenhuma compra no período.</td></tr>`;
+            } else {
+                monthBody.innerHTML = monthRows.map(([key, v]) => {
+                    const [year, month] = key.split('-');
+                    const label = `${month}/${year}`;
+                    return `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 font-medium text-gray-900">${label}</td>
+                            <td class="px-4 py-3 text-center text-gray-600">${v.count}</td>
+                            <td class="px-4 py-3 text-right text-gray-900">${formatMoney(v.invested)}</td>
+                        </tr>`;
+                }).join('');
+            }
+
+            // Modelos mais comprados
+            const byModel = {};
+            filtered.forEach(d => {
+                const key = d.model || 'Desconhecido';
+                if (!byModel[key]) byModel[key] = { count: 0, invested: 0 };
+                byModel[key].count++;
+                byModel[key].invested += d.totalCost || 0;
+            });
+
+            const modelRows = Object.entries(byModel).sort((a, b) => b[1].invested - a[1].invested).slice(0, 10);
+            const modelBody = document.getElementById('report-p-top-models');
+            if (modelRows.length === 0) {
+                modelBody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">Nenhuma compra no período.</td></tr>`;
+            } else {
+                modelBody.innerHTML = modelRows.map(([key, v]) => `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 font-medium text-gray-900">${key}</td>
+                        <td class="px-4 py-3 text-center text-gray-600">${v.count}</td>
+                        <td class="px-4 py-3 text-right text-gray-900">${formatMoney(v.invested)}</td>
+                    </tr>`).join('');
+            }
+        };
+
+        let activeReportTab = 'sales';
+        const renderReports = () => {
+            if (activeReportTab === 'purchases') {
+                renderPurchaseReports();
+            } else {
+                renderSalesReports();
+            }
+        };
+
+        const showReportTab = (tab) => {
+            activeReportTab = tab;
+            const salesTab = document.getElementById('reportTabSales');
+            const purchasesTab = document.getElementById('reportTabPurchases');
+            const salesSection = document.getElementById('report-tab-sales');
+            const purchasesSection = document.getElementById('report-tab-purchases');
+
+            if (tab === 'purchases') {
+                salesTab.className = 'px-4 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300';
+                purchasesTab.className = 'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white';
+                salesSection.classList.add('hidden');
+                purchasesSection.classList.remove('hidden');
+            } else {
+                purchasesTab.className = 'px-4 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300';
+                salesTab.className = 'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white';
+                purchasesSection.classList.add('hidden');
+                salesSection.classList.remove('hidden');
+            }
+            renderReports();
         };
 
         // Dark Mode
