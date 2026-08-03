@@ -441,9 +441,18 @@
         </div>
     </div>
 
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // State Management
         let devices = [];
+
+        // ===== CONFIGURAÇÃO SUPABASE =====
+        // Cole aqui a URL e a chave "anon" do seu projeto (Settings > API)
+        const SUPABASE_URL = 'https://xteoktgcfiaworavydpo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0ZW9rdGdjZmlhd29yYXZ5ZHBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3MzI2NDQsImV4cCI6MjEwMTMwODY0NH0.xdxQ-Ce_QS23UNZcuMZjt2TByNzegBxZ8WPkoj8odMk';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         const STATUS = {
             STOCK: 'Em estoque',
             SOLD: 'Vendido'
@@ -497,25 +506,20 @@
             }, 3000);
         };
 
-        // Load data from LocalStorage
-        const loadData = () => {
-            const data = localStorage.getItem('iphone_inventory');
-            if (data) {
-                try {
-                    devices = JSON.parse(data);
-                } catch (e) {
-                    console.error("Error parsing local storage data", e);
-                    devices = [];
-                }
+        // Load data from Supabase
+        const loadData = async () => {
+            devices = [];
+            try {
+                const { data, error } = await supabase
+                    .from('devices')
+                    .select('*')
+                    .order('createdAt', { ascending: true });
+                if (error) throw error;
+                devices = data || [];
+            } catch (e) {
+                console.error("Error loading from Supabase", e);
+                showMessage("Erro ao carregar dados do banco.", 'error');
             }
-            updateDashboard();
-            renderInventory();
-            renderSales();
-        };
-
-        // Save data to LocalStorage
-        const saveData = () => {
-            localStorage.setItem('iphone_inventory', JSON.stringify(devices));
             updateDashboard();
             renderInventory();
             renderSales();
@@ -638,7 +642,7 @@
         });
 
         // Save or Update Device
-        const savePurchase = () => {
+        const savePurchase = async () => {
             const id = document.getElementById('deviceId').value;
             const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
             const extra = parseFloat(document.getElementById('extraCosts').value) || 0;
@@ -666,13 +670,15 @@
 
             if (id) {
                 // Edit existing
-                const index = devices.findIndex(d => d.id === id);
-                if (index !== -1) {
-                    // Preserve sale data if editing a sold item (though typically shouldn't happen, good for safety)
-                    const existingData = devices[index];
-                    devices[index] = { ...existingData, ...deviceData };
-                    showMessage("Aparelho atualizado com sucesso!", "success");
+                const { error } = await supabase
+                    .from('devices')
+                    .update(deviceData)
+                    .eq('id', id);
+                if (error) {
+                    showMessage("Erro ao atualizar aparelho.", 'error');
+                    return;
                 }
+                showMessage("Aparelho atualizado com sucesso!", "success");
             } else {
                 // Add new
                 deviceData.id = 'dev_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
@@ -680,12 +686,19 @@
                 deviceData.sellPrice = null;
                 deviceData.buyerName = '';
                 deviceData.profit = 0;
-                
-                devices.push(deviceData);
+                deviceData.createdAt = new Date().toISOString();
+
+                const { error } = await supabase
+                    .from('devices')
+                    .insert([deviceData]);
+                if (error) {
+                    showMessage("Erro ao salvar aparelho.", 'error');
+                    return;
+                }
                 showMessage("Compra registrada com sucesso!", "success");
             }
 
-            saveData();
+            await loadData();
             closeModal('addModal');
         };
 
@@ -734,7 +747,7 @@
         };
 
         // Confirm Sale
-        const confirmSale = () => {
+        const confirmSale = async () => {
             const id = document.getElementById('sellDeviceId').value;
             const sellDate = document.getElementById('sellDate').value;
             const sellPrice = parseFloat(document.getElementById('sellPrice').value) || 0;
@@ -745,34 +758,43 @@
                 return;
             }
 
-            const index = devices.findIndex(d => d.id === id);
-            if (index !== -1) {
-                devices[index].status = STATUS.SOLD;
-                devices[index].sellDate = sellDate;
-                devices[index].sellPrice = sellPrice;
-                devices[index].buyerName = buyerName || 'Não informado';
-                devices[index].profit = sellPrice - devices[index].totalCost;
+            const device = devices.find(d => d.id === id);
+            if (!device) return;
 
-                saveData();
-                closeModal('sellModal');
-                showMessage("Venda registrada com sucesso! 💰", "success");
+            const profit = sellPrice - device.totalCost;
+            const { error } = await supabase
+                .from('devices')
+                .update({
+                    status: STATUS.SOLD,
+                    sellDate: sellDate,
+                    sellPrice: sellPrice,
+                    buyerName: buyerName || 'Não informado',
+                    profit: profit
+                })
+                .eq('id', id);
+            if (error) {
+                showMessage("Erro ao registrar venda.", 'error');
+                return;
             }
+
+            await loadData();
+            closeModal('sellModal');
+            showMessage("Venda registrada com sucesso!", "success");
         };
 
         // Delete Device
-        const deleteDevice = (id) => {
-            // Need a custom confirmation logic since we can't use confirm()
-            // For this implementation, we will add a double-click safety or just a simple delete for now.
-            // Implementing a pseudo-confirm inside the details modal.
-            
-            // Find device index
-            const index = devices.findIndex(d => d.id === id);
-            if (index !== -1) {
-                devices.splice(index, 1);
-                saveData();
-                closeModal('detailsModal');
-                showMessage("Aparelho excluído do sistema.", "info");
+        const deleteDevice = async (id) => {
+            const { error } = await supabase
+                .from('devices')
+                .delete()
+                .eq('id', id);
+            if (error) {
+                showMessage("Erro ao excluir aparelho.", 'error');
+                return;
             }
+            await loadData();
+            closeModal('detailsModal');
+            showMessage("Aparelho excluído do sistema.", "info");
         };
 
         // View Details
