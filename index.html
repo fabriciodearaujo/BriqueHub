@@ -173,7 +173,7 @@
             <!-- Stats Grid -->
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                 <!-- Stat Card: Em Estoque -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between min-w-0">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
                             <i class="fa-solid fa-box"></i>
@@ -181,12 +181,12 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Em Estoque</p>
-                        <p class="text-2xl font-bold text-gray-800" id="stat-stock-count">0</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="stat-stock-count">0</p>
                     </div>
                 </div>
                 
                 <!-- Stat Card: Valor Investido -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between min-w-0">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
                             <i class="fa-solid fa-wallet"></i>
@@ -194,12 +194,12 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Investimento (em estoque)</p>
-                        <p class="text-2xl font-bold text-gray-800" id="stat-invested-value">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="stat-invested-value">R$ 0,00</p>
                     </div>
                 </div>
 
                 <!-- Stat Card: Total Investido -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between min-w-0">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center">
                             <i class="fa-solid fa-sack-dollar"></i>
@@ -207,12 +207,12 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Total Investido (já gasto)</p>
-                        <p class="text-2xl font-bold text-gray-800" id="stat-total-invested">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="stat-total-invested">R$ 0,00</p>
                     </div>
                 </div>
 
                 <!-- Stat Card: Vendas Realizadas -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between min-w-0">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
                             <i class="fa-solid fa-tag"></i>
@@ -220,12 +220,12 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Qtd. Vendida</p>
-                        <p class="text-2xl font-bold text-gray-800" id="stat-sold-count">0</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="stat-sold-count">0</p>
                     </div>
                 </div>
 
                 <!-- Stat Card: Lucro Total -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between min-w-0">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
                             <i class="fa-solid fa-arrow-trend-up"></i>
@@ -233,12 +233,12 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Lucro Total</p>
-                        <p class="text-2xl font-bold text-green-600" id="stat-total-profit">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-green-600 leading-tight break-words min-w-0" id="stat-total-profit">R$ 0,00</p>
                     </div>
                 </div>
 
                 <!-- Stat Card: Despesas -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between min-w-0">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
                             <i class="fa-solid fa-receipt"></i>
@@ -246,7 +246,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Despesas (operação)</p>
-                        <p class="text-2xl font-bold text-red-600" id="stat-expenses">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-red-600 leading-tight break-words min-w-0" id="stat-expenses">R$ 0,00</p>
                     </div>
                 </div>
             </div>
@@ -388,21 +388,21 @@
             <div id="report-tab-sales">
                 <!-- Summary Cards -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                         <p class="text-sm text-gray-500 font-medium">Vendas no Período</p>
-                        <p class="text-2xl font-bold text-gray-800" id="report-count">0</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="report-count">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                         <p class="text-sm text-gray-500 font-medium">Receita</p>
-                        <p class="text-2xl font-bold text-gray-800" id="report-revenue">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="report-revenue">R$ 0,00</p>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                         <p class="text-sm text-gray-500 font-medium">Lucro</p>
-                        <p class="text-2xl font-bold text-green-600" id="report-profit">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-green-600 leading-tight break-words min-w-0" id="report-profit">R$ 0,00</p>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                         <p class="text-sm text-gray-500 font-medium">Ticket Médio</p>
-                        <p class="text-2xl font-bold text-gray-800" id="report-avg">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="report-avg">R$ 0,00</p>
                     </div>
                 </div>
 
@@ -450,21 +450,21 @@
             <div id="report-tab-purchases" class="hidden">
                 <!-- Summary Cards -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                         <p class="text-sm text-gray-500 font-medium">Compras no Período</p>
-                        <p class="text-2xl font-bold text-gray-800" id="report-p-count">0</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="report-p-count">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                         <p class="text-sm text-gray-500 font-medium">Total Investido</p>
-                        <p class="text-2xl font-bold text-gray-800" id="report-p-invested">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="report-p-invested">R$ 0,00</p>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                         <p class="text-sm text-gray-500 font-medium">Custo Médio</p>
-                        <p class="text-2xl font-bold text-gray-800" id="report-p-avg">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="report-p-avg">R$ 0,00</p>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                         <p class="text-sm text-gray-500 font-medium">Valor em Estoque (período)</p>
-                        <p class="text-2xl font-bold text-gray-800" id="report-p-stock">R$ 0,00</p>
+                        <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="report-p-stock">R$ 0,00</p>
                     </div>
                 </div>
 
@@ -519,21 +519,21 @@
 
             <!-- Summary Cards -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                     <p class="text-sm text-gray-500 font-medium">Este Mês</p>
-                    <p class="text-2xl font-bold text-red-600" id="exp-sum-month">R$ 0,00</p>
+                    <p class="text-lg sm:text-2xl font-bold text-red-600 leading-tight break-words min-w-0" id="exp-sum-month">R$ 0,00</p>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                     <p class="text-sm text-gray-500 font-medium">Últimos 30 Dias</p>
-                    <p class="text-2xl font-bold text-gray-800" id="exp-sum-30">R$ 0,00</p>
+                    <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="exp-sum-30">R$ 0,00</p>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                     <p class="text-sm text-gray-500 font-medium">Total Geral</p>
-                    <p class="text-2xl font-bold text-gray-800" id="exp-sum-total">R$ 0,00</p>
+                    <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="exp-sum-total">R$ 0,00</p>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                     <p class="text-sm text-gray-500 font-medium">Lançamentos</p>
-                    <p class="text-2xl font-bold text-gray-800" id="exp-sum-count">0</p>
+                    <p class="text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words min-w-0" id="exp-sum-count">0</p>
                 </div>
             </div>
 
@@ -1581,11 +1581,11 @@
             // Color profit based on value
             const profitEl = document.getElementById('stat-total-profit');
             if (totalProfit > 0) {
-                profitEl.className = 'text-2xl font-bold text-green-600';
+                profitEl.className = 'text-lg sm:text-2xl font-bold text-green-600 leading-tight break-words';
             } else if (totalProfit < 0) {
-                profitEl.className = 'text-2xl font-bold text-red-600';
+                profitEl.className = 'text-lg sm:text-2xl font-bold text-red-600 leading-tight break-words';
             } else {
-                profitEl.className = 'text-2xl font-bold text-gray-800';
+                profitEl.className = 'text-lg sm:text-2xl font-bold text-gray-800 leading-tight break-words';
             }
 
             // Render Recent list
@@ -1789,7 +1789,7 @@
 
             const profitEl = document.getElementById('report-profit');
             profitEl.textContent = formatMoney(profit);
-            profitEl.className = 'text-2xl font-bold ' + (profit >= 0 ? 'text-green-600' : 'text-red-600');
+            profitEl.className = 'text-lg sm:text-2xl font-bold leading-tight break-words ' + (profit >= 0 ? 'text-green-600' : 'text-red-600');
 
             // Vendas por mês
             const byMonth = {};
