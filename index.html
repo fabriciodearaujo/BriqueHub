@@ -136,6 +136,9 @@
                 <button onclick="navigateTo('sales')" class="nav-btn px-4 py-2 rounded-md text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100" data-target="sales">
                     <i class="fa-solid fa-hand-holding-dollar mr-2"></i>Vendas
                 </button>
+                <button onclick="navigateTo('reports')" class="nav-btn px-4 py-2 rounded-md text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100" data-target="reports">
+                    <i class="fa-solid fa-chart-column mr-2"></i>Relatórios
+                </button>
             </nav>
             
             <!-- Add Button (Desktop) -->
@@ -334,6 +337,90 @@
                 </div>
             </div>
         </div>
+
+        <!-- REPORTS PAGE -->
+        <div id="reports-page" class="page-transition hidden-page">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Relatórios de Vendas</h2>
+
+            <!-- Filters -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+                <div class="flex flex-wrap items-end gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">De</label>
+                        <input type="date" id="report-start" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Até</label>
+                        <input type="date" id="report-end" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="setReportPeriod('7')" class="px-3 py-2 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">7 dias</button>
+                        <button onclick="setReportPeriod('30')" class="px-3 py-2 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">30 dias</button>
+                        <button onclick="setReportPeriod('all')" class="px-3 py-2 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Tudo</button>
+                    </div>
+                    <button onclick="renderReports()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm">Filtrar</button>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-sm text-gray-500 font-medium">Vendas no Período</p>
+                    <p class="text-2xl font-bold text-gray-800" id="report-count">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-sm text-gray-500 font-medium">Receita</p>
+                    <p class="text-2xl font-bold text-gray-800" id="report-revenue">R$ 0,00</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-sm text-gray-500 font-medium">Lucro</p>
+                    <p class="text-2xl font-bold text-green-600" id="report-profit">R$ 0,00</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-sm text-gray-500 font-medium">Ticket Médio</p>
+                    <p class="text-2xl font-bold text-gray-800" id="report-avg">R$ 0,00</p>
+                </div>
+            </div>
+
+            <!-- Vendas por mês -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-100">
+                    <h3 class="font-semibold text-gray-800">Vendas por Mês</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-gray-50 text-gray-500">
+                            <tr>
+                                <th class="px-4 py-3 font-medium">Período</th>
+                                <th class="px-4 py-3 font-medium text-center">Vendas</th>
+                                <th class="px-4 py-3 font-medium text-right">Receita</th>
+                                <th class="px-4 py-3 font-medium text-right text-green-600">Lucro</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-by-month" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modelos mais vendidos -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-100">
+                    <h3 class="font-semibold text-gray-800">Modelos Mais Vendidos</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-gray-50 text-gray-500">
+                            <tr>
+                                <th class="px-4 py-3 font-medium">Modelo</th>
+                                <th class="px-4 py-3 font-medium text-center">Qtd</th>
+                                <th class="px-4 py-3 font-medium text-right">Receita</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-top-models" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </main>
 
     <nav class="sm:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-40 pb-safe">
@@ -349,6 +436,10 @@
             <button onclick="navigateTo('sales')" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-gray-900" data-target="sales">
                 <i class="fa-solid fa-hand-holding-dollar text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Vendas</span>
+            </button>
+            <button onclick="navigateTo('reports')" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-gray-900" data-target="reports">
+                <i class="fa-solid fa-chart-column text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Relatórios</span>
             </button>
         </div>
     </nav>
@@ -897,6 +988,15 @@
             // Clear search when switching tabs
             document.getElementById('search-inventory').value = '';
             renderInventory();
+
+            // Render reports when navigating to it
+            if (pageId === 'reports') {
+                if (!reportInitialized) {
+                    reportInitialized = true;
+                    setReportPeriod('30');
+                }
+                renderReports();
+            }
         };
 
         // Modal Handlers
@@ -1441,6 +1541,103 @@
                     </div>
                 </div>
             `).join('');
+        };
+
+        // ===== RELATÓRIOS =====
+        let reportInitialized = false;
+
+        const setReportPeriod = (days) => {
+            if (days === 'all') {
+                document.getElementById('report-start').value = '';
+                document.getElementById('report-end').value = '';
+                renderReports();
+                return;
+            }
+            const end = new Date();
+            const start = new Date();
+            start.setDate(start.getDate() - (parseInt(days, 10) - 1));
+            document.getElementById('report-start').value = start.toISOString().split('T')[0];
+            document.getElementById('report-end').value = end.toISOString().split('T')[0];
+            renderReports();
+        };
+
+        const renderReports = () => {
+            const startVal = document.getElementById('report-start').value;
+            const endVal = document.getElementById('report-end').value;
+            const start = startVal ? new Date(startVal + 'T00:00:00') : null;
+            const end = endVal ? new Date(endVal + 'T23:59:59') : null;
+
+            const filtered = devices.filter(d => {
+                if (d.status !== STATUS.SOLD || !d.sellDate) return false;
+                const date = new Date(d.sellDate + 'T00:00:00');
+                if (start && date < start) return false;
+                if (end && date > end) return false;
+                return true;
+            });
+
+            // Summary
+            const count = filtered.length;
+            const revenue = filtered.reduce((s, d) => s + (d.sellPrice || 0), 0);
+            const profit = filtered.reduce((s, d) => s + (d.profit || 0), 0);
+            const avg = count ? revenue / count : 0;
+
+            document.getElementById('report-count').textContent = count;
+            document.getElementById('report-revenue').textContent = formatMoney(revenue);
+            document.getElementById('report-avg').textContent = formatMoney(avg);
+
+            const profitEl = document.getElementById('report-profit');
+            profitEl.textContent = formatMoney(profit);
+            profitEl.className = 'text-2xl font-bold ' + (profit >= 0 ? 'text-green-600' : 'text-red-600');
+
+            // Vendas por mês
+            const byMonth = {};
+            filtered.forEach(d => {
+                const key = d.sellDate.substring(0, 7);
+                if (!byMonth[key]) byMonth[key] = { count: 0, revenue: 0, profit: 0 };
+                byMonth[key].count++;
+                byMonth[key].revenue += d.sellPrice || 0;
+                byMonth[key].profit += d.profit || 0;
+            });
+
+            const monthRows = Object.entries(byMonth).sort((a, b) => b[0].localeCompare(a[0]));
+            const monthBody = document.getElementById('report-by-month');
+            if (monthRows.length === 0) {
+                monthBody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">Nenhuma venda no período.</td></tr>`;
+            } else {
+                monthBody.innerHTML = monthRows.map(([key, v]) => {
+                    const [year, month] = key.split('-');
+                    const label = `${month}/${year}`;
+                    return `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 font-medium text-gray-900">${label}</td>
+                            <td class="px-4 py-3 text-center text-gray-600">${v.count}</td>
+                            <td class="px-4 py-3 text-right text-gray-900">${formatMoney(v.revenue)}</td>
+                            <td class="px-4 py-3 text-right font-bold ${v.profit >= 0 ? 'text-green-600' : 'text-red-500'}">${v.profit >= 0 ? '+' : ''}${formatMoney(v.profit)}</td>
+                        </tr>`;
+                }).join('');
+            }
+
+            // Modelos mais vendidos
+            const byModel = {};
+            filtered.forEach(d => {
+                const key = d.model || 'Desconhecido';
+                if (!byModel[key]) byModel[key] = { count: 0, revenue: 0 };
+                byModel[key].count++;
+                byModel[key].revenue += d.sellPrice || 0;
+            });
+
+            const modelRows = Object.entries(byModel).sort((a, b) => b[1].count - a[1].count).slice(0, 10);
+            const modelBody = document.getElementById('report-top-models');
+            if (modelRows.length === 0) {
+                modelBody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">Nenhuma venda no período.</td></tr>`;
+            } else {
+                modelBody.innerHTML = modelRows.map(([key, v]) => `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 font-medium text-gray-900">${key}</td>
+                        <td class="px-4 py-3 text-center text-gray-600">${v.count}</td>
+                        <td class="px-4 py-3 text-right text-gray-900">${formatMoney(v.revenue)}</td>
+                    </tr>`).join('');
+            }
         };
 
         // Dark Mode
