@@ -389,7 +389,13 @@
                         
                         <div class="col-span-2">
                             <label class="block text-xs font-medium text-gray-700 mb-1">IMEI (Opcional)</label>
-                            <input type="text" id="imei" placeholder="Apenas números" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                            <div class="flex gap-2">
+                                <input type="text" id="imei" placeholder="Apenas números (15 dígitos)" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm" maxlength="15">
+                                <button type="button" onclick="checkImei()" class="shrink-0 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm" title="Consultar pendências no portal da Anatel">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-1">A consulta abre o portal oficial da Anatel.</p>
                         </div>
                         
                         <!-- Financial Info -->
@@ -499,7 +505,12 @@
             </div>
              <div class="p-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-between gap-2">
                  <button type="button" id="btnDeleteDevice" class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100">Excluir</button>
-                <button type="button" onclick="closeModal('detailsModal')" class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Fechar</button>
+                <div class="flex gap-2">
+                    <button type="button" onclick="checkImeiFromDetails()" id="btnCheckImei" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100">
+                        <i class="fa-solid fa-magnifying-glass mr-1"></i>Consultar IMEI
+                    </button>
+                    <button type="button" onclick="closeModal('detailsModal')" class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Fechar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -522,6 +533,52 @@
 
         // State Management
         let devices = [];
+        let currentDeviceId = null;
+
+        // Portal oficial de consulta de IMEI (Anatel / ABR Telecom)
+        const IMEI_CONSULT_URL = 'https://www.consultaaparelhoimpedido.com.br/public-web/welcome.seam';
+
+        // Validação de IMEI: 15 dígitos + dígito verificador (algoritmo Luhn)
+        const isValidImei = (imei) => {
+            if (!/^\d{15}$/.test(imei)) return false;
+            let sum = 0;
+            for (let i = 0; i < 15; i++) {
+                let d = parseInt(imei[i], 10);
+                if (i % 2 === 1) d *= 2;
+                sum += d >= 10 ? d - 9 : d;
+            }
+            return sum % 10 === 0;
+        };
+
+        // Consulta a partir do campo do formulário de compra
+        const checkImei = () => {
+            const imei = document.getElementById('imei').value.replace(/\D/g, '').slice(0, 15);
+            if (!imei) {
+                showMessage("Digite o IMEI para consultar.", 'info');
+                return;
+            }
+            if (!isValidImei(imei)) {
+                showMessage("IMEI inválido. Confira os 15 dígitos.", 'error');
+                return;
+            }
+            window.open(IMEI_CONSULT_URL, '_blank');
+        };
+
+        // Consulta a partir do modal de detalhes do aparelho
+        const checkImeiFromDetails = () => {
+            const device = devices.find(d => d.id === currentDeviceId);
+            if (!device) return;
+            const imei = String(device.imei || '').trim();
+            if (!imei || imei === 'N/A') {
+                showMessage("Este aparelho não possui IMEI cadastrado.", 'info');
+                return;
+            }
+            if (!isValidImei(imei)) {
+                showMessage("IMEI cadastrado parece inválido. Verifique nos detalhes.", 'error');
+                return;
+            }
+            window.open(IMEI_CONSULT_URL, '_blank');
+        };
 
         // ===== CONFIGURAÇÃO SUPABASE =====
         // Cole aqui a URL e a chave "anon" do seu projeto (Settings > API)
@@ -731,14 +788,16 @@
             const id = document.getElementById('deviceId').value;
             const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
             const extra = parseFloat(document.getElementById('extraCosts').value) || 0;
-            
+
+            const rawImei = document.getElementById('imei').value.replace(/\D/g, '').slice(0, 15);
+
             const deviceData = {
                 model: document.getElementById('model').value.trim(),
                 storage: document.getElementById('storage').value,
                 color: document.getElementById('color').value.trim(),
                 battery: document.getElementById('battery').value,
                 condition: document.getElementById('condition').value,
-                imei: document.getElementById('imei').value.trim() || 'N/A',
+                imei: rawImei || 'N/A',
                 purchaseDate: document.getElementById('purchaseDate').value,
                 purchasePrice: price,
                 extraCosts: extra,
@@ -750,6 +809,12 @@
             // Basic Validation
             if (!deviceData.model || !deviceData.color || !deviceData.purchaseDate || price <= 0) {
                 showMessage("Preencha os campos obrigatórios corretamente.", 'error');
+                return;
+            }
+
+            // IMEI validation (if informed)
+            if (rawImei && !isValidImei(rawImei)) {
+                showMessage("IMEI inválido. Confira os 15 dígitos.", 'error');
                 return;
             }
 
@@ -887,6 +952,7 @@
             const device = devices.find(d => d.id === id);
             if (!device) return;
 
+            currentDeviceId = id;
             const content = document.getElementById('detailsContent');
             const isSold = device.status === STATUS.SOLD;
 
