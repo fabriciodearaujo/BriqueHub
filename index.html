@@ -412,11 +412,14 @@
                             <label class="block text-xs font-medium text-gray-700 mb-1">IMEI (Opcional)</label>
                             <div class="flex gap-2">
                                 <input type="text" id="imei" placeholder="Apenas números (15 dígitos)" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm" maxlength="15">
+                                <button type="button" onclick="openImeiScanner()" class="shrink-0 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm" title="Escanear IMEI pela câmera">
+                                    <i class="fa-solid fa-camera"></i>
+                                </button>
                                 <button type="button" onclick="checkImei()" class="shrink-0 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm" title="Consultar pendências no portal da Anatel">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </button>
                             </div>
-                            <p class="text-[10px] text-gray-400 mt-1">A consulta abre o portal oficial da Anatel.</p>
+                            <p class="text-[10px] text-gray-400 mt-1">Use a câmera para escanear ou digite manualmente. A lupa consulta pendências na Anatel.</p>
                         </div>
                         
                         <!-- Financial Info -->
@@ -508,6 +511,29 @@
             <div class="p-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end gap-2">
                 <button type="button" onclick="closeModal('sellModal')" class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancelar</button>
                 <button type="button" onclick="confirmSale()" class="px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-sm">Confirmar Venda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMEI Scanner Modal -->
+    <div id="imeiScannerModal" class="fixed inset-0 bg-black/60 z-50 hidden opacity-0 transition-opacity duration-300 flex justify-center items-end sm:items-center">
+        <div class="bg-white w-full sm:w-[400px] rounded-t-2xl sm:rounded-2xl flex flex-col transform translate-y-full sm:translate-y-0 transition-transform duration-300 ease-out" id="imeiScannerModalContent">
+            <div class="flex justify-between items-center p-4 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-800">Escanear IMEI</h3>
+                <button onclick="closeImeiScanner()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="bg-black rounded-lg overflow-hidden mb-3">
+                    <video id="imeiScannerVideo" autoplay playsinline muted class="w-full h-64 object-cover"></video>
+                </div>
+                <canvas id="imeiScannerCanvas" class="hidden"></canvas>
+                <p class="text-xs text-gray-500 mb-2">Posicione o IMEI (etiqueta ou tela do *#06#) na câmera e capture.</p>
+                <div id="imeiScannerStatus" class="hidden mb-2 text-sm text-blue-600 bg-blue-50 rounded-lg p-2"></div>
+                <button type="button" onclick="readImeiFromCamera()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm shadow-sm">
+                    <i class="fa-solid fa-camera mr-1"></i> Capturar e Ler
+                </button>
             </div>
         </div>
     </div>
@@ -636,6 +662,100 @@
                 return;
             }
             window.open(IMEI_CONSULT_URL, '_blank');
+        };
+
+        // ===== SCANNER DE IMEI (câmera + OCR) =====
+        let imeiScannerStream = null;
+
+        const openImeiScanner = async () => {
+            const modal = document.getElementById('imeiScannerModal');
+            const content = document.getElementById('imeiScannerModalContent');
+            document.getElementById('imeiScannerStatus').classList.add('hidden');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                if (window.innerWidth < 640) {
+                    content.classList.remove('translate-y-full');
+                } else {
+                    content.classList.add('scale-100');
+                }
+            }, 10);
+
+            try {
+                imeiScannerStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' }
+                });
+                const video = document.getElementById('imeiScannerVideo');
+                video.srcObject = imeiScannerStream;
+                await video.play();
+            } catch (e) {
+                console.error(e);
+                showMessage("Não foi possível acessar a câmera. Verifique a permissão.", 'error');
+                closeImeiScanner();
+            }
+        };
+
+        const closeImeiScanner = () => {
+            if (imeiScannerStream) {
+                imeiScannerStream.getTracks().forEach(t => t.stop());
+                imeiScannerStream = null;
+            }
+            const modal = document.getElementById('imeiScannerModal');
+            const content = document.getElementById('imeiScannerModalContent');
+            modal.classList.add('opacity-0');
+            if (window.innerWidth < 640) {
+                content.classList.add('translate-y-full');
+            } else {
+                content.classList.remove('scale-100');
+            }
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        };
+
+        const loadTesseract = () => new Promise((resolve, reject) => {
+            if (window.Tesseract) return resolve();
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5';
+            s.onload = resolve;
+            s.onerror = () => reject(new Error('Falha ao carregar o OCR'));
+            document.head.appendChild(s);
+        });
+
+        const readImeiFromCamera = async () => {
+            const video = document.getElementById('imeiScannerVideo');
+            const canvas = document.getElementById('imeiScannerCanvas');
+            const status = document.getElementById('imeiScannerStatus');
+
+            if (!video.videoWidth) {
+                showMessage("Câmera não está ativa. Tente novamente.", 'error');
+                return;
+            }
+
+            status.textContent = 'Lendo número...';
+            status.classList.remove('hidden');
+
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            try {
+                await loadTesseract();
+                const { data } = await window.Tesseract.recognize(canvas, 'eng');
+                const digits = (data.text || '').replace(/\D/g, '');
+                const match = digits.match(/\d{15}/);
+                if (match && isValidImei(match[0])) {
+                    document.getElementById('imei').value = match[0];
+                    showMessage('IMEI detectado com sucesso!', 'success');
+                    closeImeiScanner();
+                } else {
+                    status.textContent = 'Não encontrei o IMEI. Aproxime a câmera e tente de novo.';
+                }
+            } catch (e) {
+                console.error(e);
+                status.textContent = 'Erro ao ler a imagem. Tente novamente.';
+            }
         };
 
         // ===== CONFIGURAÇÃO SUPABASE =====
@@ -1443,6 +1563,9 @@
         // Close modals on escape key or outside click
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
+                if (!document.getElementById('imeiScannerModal').classList.contains('hidden')) {
+                    closeImeiScanner();
+                }
                 ['addModal', 'sellModal', 'detailsModal'].forEach(closeModal);
             }
         });
@@ -1452,6 +1575,9 @@
             document.getElementById(id).addEventListener('click', (e) => {
                 if (e.target.id === id) closeModal(id);
             });
+        });
+        document.getElementById('imeiScannerModal').addEventListener('click', (e) => {
+            if (e.target.id === 'imeiScannerModal') closeImeiScanner();
         });
 
     </script>
