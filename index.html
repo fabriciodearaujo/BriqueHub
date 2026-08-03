@@ -415,6 +415,9 @@
                                 <button type="button" onclick="openImeiScanner()" class="shrink-0 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm" title="Escanear IMEI pela câmera">
                                     <i class="fa-solid fa-camera"></i>
                                 </button>
+                                <button type="button" onclick="copyImei()" class="shrink-0 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm" title="Copiar IMEI">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
                                 <button type="button" onclick="checkImei()" class="shrink-0 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm" title="Consultar pendências no portal da Anatel">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </button>
@@ -620,7 +623,7 @@
         let currentDeviceId = null;
 
         // Portal oficial de consulta de IMEI (Anatel / ABR Telecom)
-        const IMEI_CONSULT_URL = 'https://www.consultaaparelhoimpedido.com.br/public-web/home';
+        const IMEI_CONSULT_URL = 'https://www.consultaaparelhoimpedido.com.br/public-web/welcome';
 
         // Validação de IMEI: 15 dígitos + dígito verificador (algoritmo Luhn)
         const isValidImei = (imei) => {
@@ -666,6 +669,20 @@
 
         // ===== SCANNER DE IMEI (câmera + OCR) =====
         let imeiScannerStream = null;
+
+        const copyImei = async () => {
+            const imei = document.getElementById('imei').value.replace(/\D/g, '').slice(0, 15);
+            if (!imei) {
+                showMessage("Nenhum IMEI para copiar. Escaneie ou digite primeiro.", 'info');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(imei);
+                showMessage("IMEI copiado: " + imei, 'success');
+            } catch (e) {
+                showMessage("Não foi possível copiar. Copie manualmente.", 'error');
+            }
+        };
 
         const openImeiScanner = async () => {
             const modal = document.getElementById('imeiScannerModal');
